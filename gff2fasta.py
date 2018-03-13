@@ -8,7 +8,8 @@ import sys
 import subprocess as sub
 
 # Usage: ./gff2fasta.py <SRR#> <output filename>
-# Note: add getopts later (if needed)
+# Notes: add getopts later (if needed)
+#	produces .fna and .faa from Gene Prediction's GFF files
 
 if len(sys.argv) < 3:
  print("Incorrect number of arguments")
@@ -27,8 +28,9 @@ with open(gffFile, "r") as g:
  gff = g.read()
 
 # Start writing to output file
-out = open(outFile, "a")
+outN = open(outFile+".fna", "a")
 
+print("Parsing GFF file "+gffFile)
 for i in gff.split("\n"):
  # Skip header information
  if i.find("#") != 0:
@@ -40,9 +42,13 @@ for i in gff.split("\n"):
   seqname = parse[0]
   start = parse[3]
   end = parse[4]
-  print(seqname, start, end)
   # Run samtools with parsed parameters
-  sub.Popen(["samtools","faidx",fastaFile, seqname+":"+start+"-"+end], stdout=out)
+  sub.Popen(["samtools","faidx",fastaFile, seqname+":"+start+"-"+end], stdout=outN)
 
 # Done writing
-out.close()
+outN.close()
+
+# Convert nucleic acid sequence to amino acid sequence
+print("Done parsing GFF\n\nTranslating "+outFile+" to protein sequence\n\n")
+# Run EMBOSS transeq
+sub.run(["transeq",outFile+".fna",outFile+".faa"])
