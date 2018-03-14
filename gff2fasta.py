@@ -28,10 +28,9 @@ with open(gffFile, "r") as g:
 	gff = g.read()
 
 # Start writing to output file
-outN = open(outFile+".fna", "a")
-
+outN = open("negative.fasta", "a")
+outP = open("positive.fasta","a")
 print("Parsing GFF file "+gffFile)
-
 
 for i in gff.split("\n"):
  # Skip header information
@@ -45,15 +44,43 @@ for i in gff.split("\n"):
 		start = parse[3]
 		end = parse[4]
 		if(parse[6]=="+"):
-			# Run samtools with parsed parameters
-			# sub.Popen(["samtools","faidx",fastaFile, seqname+":"+start+"-"+end], stdout=outN)
-		elif(parse[6]=="-"):
+			# Run samtools with parsed parameters to store the positive strand sequences in a file
+			temp = open("temp.fasta","w")
 			sub.Popen(["samtools","faidx",fastaFile, seqname+":"+start+"-"+end], stdout=temp)
-			print(temp)
-			break
+			temp.close()
+			seq=""
+			with open("temp.fasta","r") as INPUT:
+				for line in INPUT:
+					if(">" in line):
+						outP.write(line)
+					else:
+						seq+=line.strip()
+				outP.write(seq)			
 
-# Done writing
+		elif(parse[6]=="-"):
+			# Run samtools with parsed parameters to store the negative strand sequences in a different file
+			temp = open("temp.fasta","w")
+			sub.Popen(["samtools","faidx",fastaFile, seqname+":"+start+"-"+end], stdout=temp)
+			temp.close()
+			seq=""
+			with open("temp.fasta","r") as INPUT:
+				for line in INPUT:
+					if(">" in line):
+						outN.write(line)
+					else:
+						seq+=line.strip()
+				seq=seq[::-1] # reversing the string
+				seq=seq.replace("A","Z")
+				seq=seq.replace("T","A")
+				seq=seq.replace("Z","T")
+				seq=seq.replace("G","Z")
+				seq=seq.replace("C","G")
+				seq=seq.replace("Z","C")
+				outN.write(seq)
+
+# Done writing to temp files
 outN.close()
+outP.close()
 
 # Convert nucleic acid sequence to amino acid sequence
 # print("Done parsing GFF\n\nTranslating "+outFile+" to protein sequence\n\n")
