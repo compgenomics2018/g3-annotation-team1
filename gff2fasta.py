@@ -11,6 +11,10 @@ import subprocess as sub
 # Notes: add getopts later (if needed)
 #	produces .fna and .faa from Gene Prediction's GFF files
 
+def reverse_complement(dna):
+    complement = {'A': 'T', 'C': 'G', 'G': 'C', 'T': 'A'}
+    return ''.join([complement[base] for base in dna[::-1]])
+
 if len(sys.argv) < 3:
 	print("Incorrect number of arguments")
 	exit(0)
@@ -69,18 +73,18 @@ for i in gff.split("\n"):
 						outN.write(line)
 					else:
 						seq+=line.strip()
-				seq=seq[::-1] # reversing the string
-				seq=seq.replace("A","Z")
-				seq=seq.replace("T","A")
-				seq=seq.replace("Z","T")
-				seq=seq.replace("G","Z")
-				seq=seq.replace("C","G")
-				seq=seq.replace("Z","C")
+				seq=reverse_complement(seq)
 				outN.write(seq)
 
 # Done writing to temp files
 outN.close()
 outP.close()
+
+sub.check_call(["cat","positive.fasta",">"outFile+".faa"])
+sub.check_call(["cat","negative.fasta",">>"outFile+".faa"])
+sub.check_call(["rm","negative.fasta"])
+sub.check_call(["rm","positive.fasta"])
+sub.check_call(["rm","temp.fasta"])
 
 # Convert nucleic acid sequence to amino acid sequence
 # print("Done parsing GFF\n\nTranslating "+outFile+" to protein sequence\n\n")
