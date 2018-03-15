@@ -32,8 +32,8 @@ with open(gffFile, "r") as g:
 	gff = g.read()
 
 # Start writing to output file
-outN = open("negative.fasta", "a")
-outP = open("positive.fasta","a")
+outN = open("negative.fasta", "w")
+outP = open("positive.fasta","w")
 print("Parsing GFF file "+gffFile)
 
 for i in gff.split("\n"):
@@ -59,7 +59,8 @@ for i in gff.split("\n"):
 						outP.write(line)
 					else:
 						seq+=line.strip()
-				outP.write(seq)			
+				outP.write(seq)
+				outP.write("\n")			
 
 		elif(parse[6]=="-"):
 			# Run samtools with parsed parameters to store the negative strand sequences in a different file
@@ -75,18 +76,29 @@ for i in gff.split("\n"):
 						seq+=line.strip()
 				seq=reverse_complement(seq)
 				outN.write(seq)
+				outN.write("\n")
 
 # Done writing to temp files
 outN.close()
 outP.close()
 
-sub.check_call(["cat","positive.fasta",">"outFile+".faa"])
-sub.check_call(["cat","negative.fasta",">>"outFile+".faa"])
+with open("positive.fasta","r") as p:
+	fml=p.read()
+
+with open("negative.fasta","r") as n:
+	fml+=n.read()
+
+with open(outFile+".fna","w") as o:
+	o.write(fml)
+
+
+# Convert nucleic acid sequence to amino acid sequence
+print("Done parsing GFF\n\nTranslating "+outFile+" to protein sequence\n\n")
+# Run EMBOSS transeq
+sub.run(["transeq",outFile+".fna",outFile+".faa"])
+
 sub.check_call(["rm","negative.fasta"])
 sub.check_call(["rm","positive.fasta"])
 sub.check_call(["rm","temp.fasta"])
 
-# Convert nucleic acid sequence to amino acid sequence
-# print("Done parsing GFF\n\nTranslating "+outFile+" to protein sequence\n\n")
-# Run EMBOSS transeq
-# sub.run(["transeq",outFile+".fna",outFile+".faa"])
+print("DONE")
