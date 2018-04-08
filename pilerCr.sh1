@@ -1,6 +1,0 @@
-#!/usr/bin/bash
-
-infile="/projects/home/sgulati36/skesaShit/$0"
-outfile="/projects/home/sgulati36/pilerOutputs/$0"
-
-./pilercr -noinfo -in $infile -out $outfile

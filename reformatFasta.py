@@ -45,4 +45,4 @@ with open(outFile,"w+") as OUTPUT:
 check_call(["sed","-i","s/\.f[na]a//g",outFile])
 
 if(".faa" in inFile):
-	check_call(["sed","-ir","s/\*$//g",outFile])
+	check_call(["sed","-ri","s/\*$//g",outFile])
