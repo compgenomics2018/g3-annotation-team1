@@ -18,6 +18,8 @@ del info
 for i in range(len(headers)):
 	m=re.search(">(SRR\d+)_(.*)",headers[i])
 	if(m.group(1) in data):
+		if(m.group(2) in data[m.group(1)]):
+			print("This is wrong")
 		data[m.group(1)][m.group(2)]=sequences[i]
 	else:
 		data[m.group(1)]={}
