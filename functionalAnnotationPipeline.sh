@@ -24,7 +24,7 @@ database="kop_final.table";
 card="protein_fasta_protein_homolog_model.fasta"
 vfdb="VFDB_setB_nt.fas"
 
-while getopts ":f:g:o:h" opt; do #change to actual options that are being used
+while getopts ":f:g:o:htidcv" opt; do #change to actual options that are being used
   case ${opt} in
     f ) fastaPath=$OPTARG;f=1;
         if [ ! -d $fastaPath ] #checking if input file1 exists
