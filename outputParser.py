@@ -196,247 +196,104 @@ vfdbOutput=vfdb(options.vfdb_File)
 
 clusterIndex=uclust(options.uc_File)
 
-### time to apply annotations to all members of a cluster now that we have an index
+### reading all the individual re-formatted output arrays and storing everything into a hash
 
 data={}
 
-for i in lipoOutput:
-	m=re.search("(SRR\d+)_(.*)",i[0])
+def allSequences(outputArray):
+	for i in outputArray:
+		m=re.search("(SRR\d+)_(.*)",i[0])
 
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
+		if(m.group(1) in data):
+			if(m.group(2) in data[m.group(1)]):
+				data[m.group(1)][m.group(2)][i[1]]=i[2]
+			else:
+				data[m.group(1)][m.group(2)]={}
+				data[m.group(1)][m.group(2)][i[1]]=i[2]
 		else:
+			data[m.group(1)]={}
 			data[m.group(1)][m.group(2)]={}
 			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
 
+def centroids(outputArray, clustIndex):
+	for i in outputArray:
+		for j in clustIndex[i[0]]:
+
+			m=re.search("(SRR\d+)_(.*)",j)
+
+			if(m.group(1) in data):
+				if(m.group(2) in data[m.group(1)]):
+					data[m.group(1)][m.group(2)][i[1]]=i[2]
+				else:
+					data[m.group(1)][m.group(2)]={}
+					data[m.group(1)][m.group(2)][i[1]]=i[2]
+			else:
+				data[m.group(1)]={}
+				data[m.group(1)][m.group(2)]={}
+				data[m.group(1)][m.group(2)][i[1]]=i[2]		
+
+		m=re.search("(SRR\d+)_(.*)",i[0])
+
+		if(m.group(1) in data):
+			if(m.group(2) in data[m.group(1)]):
+				data[m.group(1)][m.group(2)][i[1]]=i[2]
+			else:
+				data[m.group(1)][m.group(2)]={}
+				data[m.group(1)][m.group(2)][i[1]]=i[2]
+		else:
+			data[m.group(1)]={}
+			data[m.group(1)][m.group(2)]={}
+			data[m.group(1)][m.group(2)][i[1]]=i[2]
+
+allSequences(lipoOutput)
 del lipoOutput
-
-for i in deepArgOutput:
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+allSequences(deepArgOutput)
 del deepArgOutput
-
-for i in cardOutput:
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+allSequences(cardOutput)
 del cardOutput
-
-for i in vfdbOutput:
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+allSequences(vfdbOutput)
 del vfdbOutput
-
-for i in eggnogOutput:
-	for j in clusterIndex[i[0]]:
-
-		m=re.search("(SRR\d+)_(.*)",j)
-
-		if(m.group(1) in data):
-			if(m.group(2) in data[m.group(1)]):
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-			else:
-				data[m.group(1)][m.group(2)]={}
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)]={}
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]		
-
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+centroids(eggnogOutput,clusterIndex)
 del eggnogOutput
-
-for i in tmhmmOutput:
-	for j in clusterIndex[i[0]]:
-		m=re.search("(SRR\d+)_(.*)",j)
-
-		if(m.group(1) in data):
-			if(m.group(2) in data[m.group(1)]):
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-			else:
-				data[m.group(1)][m.group(2)]={}
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)]={}
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]		
-
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+centroids(tmhmmOutput,clusterIndex)
 del tmhmmOutput
-
-for i in signalpOutput:
-	for j in clusterIndex[i[0]]:
-		m=re.search("(SRR\d+)_(.*)",j)
-
-		if(m.group(1) in data):
-			if(m.group(2) in data[m.group(1)]):
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-			else:
-				data[m.group(1)][m.group(2)]={}
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)]={}
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]		
-
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+centroids(signalpOutput,clusterIndex)
 del signalpOutput
-
-for i in phobiusOutput:
-	for j in clusterIndex[i[0]]:
-		m=re.search("(SRR\d+)_(.*)",j)
-
-		if(m.group(1) in data):
-			if(m.group(2) in data[m.group(1)]):
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-			else:
-				data[m.group(1)][m.group(2)]={}
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)]={}
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]		
-
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+centroids(phobiusOutput,clusterIndex)
 del phobiusOutput
-
-for i in door2Output:
-	for j in clusterIndex[i[0]]:
-		m=re.search("(SRR\d+)_(.*)",j)
-
-		if(m.group(1) in data):
-			if(m.group(2) in data[m.group(1)]):
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-			else:
-				data[m.group(1)][m.group(2)]={}
-				data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)]={}
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]		
-
-	m=re.search("(SRR\d+)_(.*)",i[0])
-
-	if(m.group(1) in data):
-		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-		else:
-			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][i[1]]=i[2]
-	else:
-		data[m.group(1)]={}
-		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][i[1]]=i[2]
-
+centroids(door2Output,clusterIndex)
 del door2Output
 
-#### opening the gff files and reading all useful info
+### opening the merged gff file and reading everything
 
 with open(options.gff_File,"r") as INPUT:
 	lines=INPUT.read().strip().split("\n")
 
 info={}
+nameInfo={}
 
 for line in lines:
 	temp=line.split("\t")
-
+	
 	m=re.search("(SRR\d+)_(.*)",temp[0])
+	n=re.search("(scaffold\d+)\|size\d+;?(.*)",temp[8])
+
+	if(m.group(1) in nameInfo):
+		nameInfo[m.group(1)][m.group(2)]=n.group(1)
+	else:
+		nameInfo[m.group(1)]={}
+		nameInfo[m.group(1)][m.group(2)]=n.group(1)
 
 	if(m.group(1) in data):
 		if(m.group(2) in data[m.group(1)]):
-			data[m.group(1)][m.group(2)][temp[1]]=temp[8]
+			data[m.group(1)][m.group(2)][temp[1]]="geneID="+m.group(2)+";"+n.group(2)
 		else:
 			data[m.group(1)][m.group(2)]={}
-			data[m.group(1)][m.group(2)][temp[1]]=temp[8]
+			data[m.group(1)][m.group(2)][temp[1]]="geneID="+m.group(2)+";"+n.group(2)
 	else:
 		data[m.group(1)]={}
 		data[m.group(1)][m.group(2)]={}
-		data[m.group(1)][m.group(2)][temp[1]]=temp[8]
+		data[m.group(1)][m.group(2)][temp[1]]="geneID="+m.group(2)+";"+n.group(2)
 
 	if(m.group(1) in info):
 		info[m.group(1)][m.group(2)]=temp[2:8]
@@ -449,10 +306,8 @@ del lines
 #### writing everything into 1 gff file per sample
 
 for i in data:
-	print(i)
+	print("Writing annotations for",i,"to a gff file.")
 	with open(options.outdir+"/"+i+".gff","w+") as OUTPUT:
 		for j in data[i]:
-			# print(j)
 			for k in data[i][j]:
-				# print(k)
-				OUTPUT.write(j+"\t"+k+"\t"+"\t".join(info[i][j])+"\t"+data[i][j][k]+"\n")
+				OUTPUT.write(nameInfo[i][j]+"\t"+k+"\t"+"\t".join(info[i][j])+"\t"+"geneID="+j+";"+data[i][j][k]+"\n")
